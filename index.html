@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>For You</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Noto+Serif+Sinhala:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100%;
+  min-height:100%;
+  margin:0;
+  overflow-x:hidden;
+}
+
+body{
+  background:
+    radial-gradient(circle at 50% 30%, #2a1613 0%, #110b09 45%, #050403 100%);
+  color:#eadcc4;
+  font-family:"Cormorant Garamond",serif;
+  min-height:100vh;
+}
+
+/* =========================
+   PASSWORD SCREEN
+========================= */
+
+#passwordScreen{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:25px;
+  background:
+    radial-gradient(circle at center,#241310 0%,#0c0807 55%,#030303 100%);
+  transition:opacity 1s ease, visibility 1s ease;
+}
+
+.passwordBox{
+  width:min(360px,100%);
+  text-align:center;
+}
+
+.smallMark{
+  font-size:14px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+  color:#9d8665;
+  margin-bottom:30px;
+}
+
+.passwordBox h1{
+  margin:0 0 30px;
+  font-size:clamp(34px,10vw,52px);
+  font-weight:500;
+  color:#e8d7b7;
+}
+
+.passwordInput{
+  width:100%;
+  padding:15px 18px;
+  border:1px solid rgba(190,157,105,.35);
+  border-radius:2px;
+  outline:none;
+  background:rgba(255,255,255,.035);
+  color:#eadcc4;
+  text-align:center;
+  font-size:18px;
+  letter-spacing:5px;
+  font-family:"Cormorant Garamond",serif;
+}
+
+.passwordInput::placeholder{
+  color:#796a59;
+  letter-spacing:3px;
+}
+
+.enterBtn{
+  margin-top:18px;
+  width:100%;
+  padding:14px;
+  border:1px solid #8f7045;
+  background:transparent;
+  color:#d9c09a;
+  font-family:"Cormorant Garamond",serif;
+  font-size:17px;
+  letter-spacing:4px;
+  cursor:pointer;
+  transition:.4s;
+}
+
+.enterBtn:active{
+  transform:scale(.97);
+  background:rgba(180,140,80,.08);
+}
+
+.error{
+  height:20px;
+  margin-top:12px;
+  color:#9e6b5b;
+  font-size:14px;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+#main{
+  display:none;
+  min-height:100vh;
+  padding:30px 16px 60px;
+}
+
+.stage{
+  min-height:calc(100vh - 60px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+
+/* =========================
+   SCROLL
+========================= */
+
+.scrollScene{
+  width:min(430px,100%);
+  position:relative;
+  padding-top:30px;
+}
+
+.scroll{
+  position:relative;
+  width:100%;
+  height:145px;
+  overflow:hidden;
+  border-radius:5px;
+  background:
+    linear-gradient(90deg,
+      #8b6841 0%,
+      #d3b783 8%,
+      #ead4a5 50%,
+      #c8a875 92%,
+      #765634 100%);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.65),
+    inset 0 0 25px rgba(72,42,18,.25);
+  transition:height .08s linear;
+}
+
+.scroll:before,
+.scroll:after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  height:22px;
+  background:
+    linear-gradient(#694a2c,#c59b61 35%,#e0c28e 60%,#684a2c);
+  box-shadow:0 5px 12px rgba(0,0,0,.45);
+  z-index:5;
+}
+
+.scroll:before{
+  top:0;
+}
+
+.scroll:after{
+  bottom:0;
+}
+
+.paperTexture{
+  position:absolute;
+  inset:0;
+  opacity:.22;
+  background-image:
+    radial-gradient(rgba(70,40,20,.35) .7px,transparent .8px);
+  background-size:7px 7px;
+  pointer-events:none;
+}
+
+.forYou{
+  position:absolute;
+  inset:25px 15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#302116;
+  font-family:"Great Vibes",cursive;
+  font-size:clamp(48px,15vw,72px);
+  transform:rotate(-2deg);
+  opacity:0;
+  transition:opacity 1.5s ease;
+  pointer-events:none;
+}
+
+.scroll.open .forYou{
+  opacity:1;
+}
+
+/* =========================
+   THREAD
+========================= */
+
+.threadArea{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:20;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.thread{
+  width:3px;
+  height:70px;
+  background:
+    linear-gradient(to right,#6b4728,#d0a86c,#674326);
+  border-radius:5px;
+  box-shadow:0 2px 5px rgba(0,0,0,.5);
+  touch-action:none;
+}
+
+.threadHandle{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 30%,#d5b27a,#896139 55%,#4d311c);
+  border:2px solid #b78d57;
+  box-shadow:
+    0 7px 20px rgba(0,0,0,.65),
+    inset 0 2px 3px rgba(255,255,255,.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#ead0a1;
+  font-size:19px;
+  cursor:grab;
+  touch-action:none;
+}
+
+.threadHandle:active{
+  cursor:grabbing;
+}
+
+/* =========================
+   HINT
+========================= */
+
+.dragHint{
+  margin-top:25px;
+  color:#8e7960;
+  font-size:14px;
+  letter-spacing:2px;
+  opacity:.85;
+  transition:opacity .5s;
+}
+
+.dragHint.hide{
+  opacity:0;
+}
+
+/* =========================
+   LETTER
+========================= */
+
+.letter{
+  display:none;
+  width:min(720px,100%);
+  margin:35px auto 0;
+  padding:35px 25px 45px;
+  position:relative;
+
+  background:
+    linear-gradient(rgba(222,199,153,.96),rgba(201,171,119,.96)),
+    #d7bd8b;
+
+  color:#302318;
+
+  box-shadow:
+    0 25px 80px rgba(0,0,0,.65),
+    inset 0 0 35px rgba(87,51,21,.25);
+
+  animation:letterIn 1.8s ease forwards;
+}
+
+.letter:before{
+  content:"";
+  position:absolute;
+  inset:10px;
+  border:1px solid rgba(73,48,27,.3);
+  pointer-events:none;
+}
+
+@keyframes letterIn{
+  from{
+    opacity:0;
+    transform:translateY(35px) scale(.97);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+.letterTitle{
+  text-align:center;
+  font-family:"Great Vibes",cursive;
+  font-size:clamp(42px,12vw,68px);
+  font-weight:400;
+  margin-bottom:28px;
+  transform:rotate(-2deg);
+}
+
+.letterText{
+  font-family:"Noto Serif Sinhala","Cormorant Garamond",serif;
+  font-size:clamp(16px,4.3vw,21px);
+  line-height:2;
+  white-space:normal;
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+
+.letterText p{
+  margin:0 0 22px;
+}
+
+.signature{
+  margin-top:35px;
+  text-align:right;
+  font-family:"Great Vibes",cursive;
+  font-size:clamp(32px,9vw,48px);
+  transform:rotate(-3deg);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:480px){
+
+  #main{
+    padding:20px 12px 45px;
+  }
+
+  .stage{
+    min-height:calc(100vh - 40px);
+  }
+
+  .scrollScene{
+    width:100%;
+  }
+
+  .scroll{
+    height:135px;
+  }
+
+  .letter{
+    padding:30px 21px 38px;
+  }
+
+  .letterText{
+    font-size:16px;
+    line-height:1.95;
+  }
+}
+
+/* =========================
+   REVEAL
+========================= */
+
+.fadeOut{
+  opacity:0;
+  pointer-events:none;
+}
+
+.show{
+  display:block;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PASSWORD -->
+
+<section id="passwordScreen">
+
+  <div class="passwordBox">
+
+    <div class="smallMark">A Private Letter</div>
+
+    <h1>Enter</h1>
+
+    <input
+      id="password"
+      class="passwordInput"
+      type="password"
+      placeholder="Password"
+      autocomplete="off"
+    >
+
+    <button class="enterBtn" onclick="unlock()">
+      ENTER
+    </button>
+
+    <div id="error" class="error"></div>
+
+  </div>
+
+</section>
+
+
+<!-- MAIN -->
+
+<main id="main">
+
+  <div class="stage">
+
+    <!-- SCROLL -->
+
+    <div id="scrollScene" class="scrollScene">
+
+      <div id="scroll" class="scroll">
+
+        <div class="paperTexture"></div>
+
+        <div class="forYou">
+          For You
+        </div>
+
+      </div>
+
+      <!-- THREAD -->
+
+      <div class="threadArea">
+
+        <div id="thread" class="thread"></div>
+
+        <div id="handle" class="threadHandle">
+          ↓
+        </div>
+
+      </div>
+
+      <div id="hint" class="dragHint">
+        pull the thread down
+      </div>
+
+    </div>
+
+
+    <!-- LETTER -->
+
+    <article id="letter" class="letter">
+
+      <div class="letterTitle">
+        For You
+      </div>
+
+      <div class="letterText">
+
+        <p>
+          සුබම සුබ උපන්දිනයක් වේවා මගේ කුටූ මැණික.
+        </p>
+
+        <p>
+          අද ඔයාගේ birthday එක.
+          ඒත් මට නම් අද තවත් විශේෂයි...
+          මොකද මට මෙච්චර ආදරේ කරන්න පුළුවන් කෙනෙක්
+          මේ ලෝකෙට ආපු දවස අද.
+        </p>
+
+        <p>
+          මට සමහර වෙලාවට ඔයාට මං කොච්චර ආදරෙයිද
+          කියලා වචනවලින් කියන්න බෑ.
+          කියන්න ගියත් වචන මදි වගේ.
+        </p>
+
+        <p>
+          ඒත් මං හිතන හැම වෙලාවකම මට හිතෙන්නේ
+          එකම දෙයක්...
+          මේ කෙනා මගේ ජීවිතේ ඉන්න එක
+          මට කොච්චර වාසනාවක්ද කියලා.
+        </p>
+
+        <p>
+          ඔයා එක්ක ගත කරපු හැම පොඩි මොහොතක්ම
+          මට වටිනවා.
+          අපි එකට හිනා වුණ දේවල්,
+          පොඩි දේවල්වලට රණ්ඩු වුණ හැටි,
+          ආයෙත් කතා කරපු හැටි...
+          ඒ හැම දෙයක්ම මගේ මතකවල
+          ලස්සන කොටස් වෙලා තියෙනවා.
+        </p>
+
+        <p>
+          සමහර දවස්වල අපි දෙන්නට දෙන්නා
+          තේරුම් ගන්න බැරි වෙලාවල් ඇති.
+          සමහර වෙලාවට මං ඔයාට දුකක් දීලා ඇති.
+          ඔයාට හිත රිදුණු වෙලාවල් ඇති.
+          ඒ හැමදේකටම මට සමාවෙන්න මැණික.
+        </p>
+
+        <p>
+          මං perfect කෙනෙක් නෙවෙයි.
+          හැමදේම හරියට කරන්න මට බැරි වෙයි.
+          ඒත් එක දෙයක් ගැන නම් මට sure...
+          මං ඔයාට ආදරේ කරන එක බොරුවක් නෙවෙයි.
+        </p>
+
+        <p>
+          ඔයා සතුටින් ඉන්නකොට මටත් සතුටුයි.
+          ඔයා දුකින් ඉන්නකොට මටත් හිතට අමාරුයි.
+          ඔයා හිනාවෙනකොට ඒ හිනාව තව ටිකක්
+          දිගට බලන් ඉන්න හිතෙනවා.
+        </p>
+
+        <p>
+          ඒ නිසා අද මං ප්‍රාර්ථනා කරන්නේ
+          ඔයාගේ ජීවිතේට දුක අඩු වෙලා,
+          සතුට වැඩි වෙන්න.
+          ඔයා හිතන හැම හීනයක්ම හැබෑ වෙන්න.
+          ඔයාට ලැබෙන්න ඕන ආදරය,
+          සතුට, සැනසීම හැමදේම ලැබෙන්න.
+        </p>
+
+        <p>
+          ජීවිතේ කොච්චර දුර ගියත්,
+          අපි කොච්චර වෙනස් වුණත්,
+          අද වගේ දවසක මට ඔයාට
+          මේ වගේම wish කරන්න පුළුවන් වෙන්න
+          කියලා මං හිතනවා.
+        </p>
+
+        <p>
+          මොකද...
+          ඔයා මගේ ජීවිතේට ආපු කෙනෙක් විතරක් නෙවෙයි.
+          මගේ හිතට ගොඩක් ලං වුණු කෙනෙක්.
+        </p>
+
+        <p>
+          ඉතින් මගේ කුටූ මැණික...
+          අද හොඳට හිනාවෙන්න.
+          හොඳට සතුටු වෙන්න.
+          ඔයාගේ දවස ඔයාට මතක හිටින
+          ලස්සන දවසක් කරගන්න.
+        </p>
+
+        <p>
+          මොකද අද...
+          මගේ හිතේ ගොඩක්ම වටින කෙනෙක්ගේ දවස.
+        </p>
+
+        <p>
+          සුබම සුබ උපන්දිනයක් වේවා
+          මගේ කුටූ මැණික.
+        </p>
+
+      </div>
+
+      <div class="signature">
+        Always yours
+      </div>
+
+    </article>
+
+  </div>
+
+</main>
+
+
+<script>
+
+const PASSWORD = "kutu";
+
+const passwordScreen = document.getElementById("passwordScreen");
+const password = document.getElementById("password");
+const error = document.getElementById("error");
+const main = document.getElementById("main");
+
+const scroll = document.getElementById("scroll");
+const handle = document.getElementById("handle");
+const thread = document.getElementById("thread");
+const hint = document.getElementById("hint");
+const letter = document.getElementById("letter");
+const scrollScene = document.getElementById("scrollScene");
+
+let dragging = false;
+let startY = 0;
+let currentPull = 0;
+
+const maxPull = 250;
+
+
+/* PASSWORD */
+
+function unlock(){
+
+  if(password.value === PASSWORD){
+
+    passwordScreen.classList.add("fadeOut");
+
+    setTimeout(()=>{
+
+      passwordScreen.style.display="none";
+      main.style.display="block";
+
+    },1000);
+
+  }else{
+
+    error.textContent="";
+
+    setTimeout(()=>{
+      error.textContent="Try again";
+    },100);
+
+  }
+
+}
+
+password.addEventListener("keydown",(e)=>{
+
+  if(e.key === "Enter"){
+    unlock();
+  }
+
+});
+
+
+/* THREAD DRAG */
+
+function startDrag(e){
+
+  dragging=true;
+
+  startY =
+    e.touches ?
+    e.touches[0].clientY :
+    e.clientY;
+
+  handle.style.cursor="grabbing";
+
+  e.preventDefault();
+}
+
+
+function moveDrag(e){
+
+  if(!dragging) return;
+
+  const y =
+    e.touches ?
+    e.touches[0].clientY :
+    e.clientY;
+
+  let delta = y - startY;
+
+  if(delta < 0) delta=0;
+
+  currentPull = Math.min(delta,maxPull);
+
+  /*
+    Scroll expands according to finger movement
+  */
+
+  const newHeight = 145 + currentPull * 1.8;
+
+  scroll.style.height =
+    Math.min(newHeight,590) + "px";
+
+  /*
+    Move thread
+  */
+
+  thread.style.height =
+    (70 + currentPull) + "px";
+
+  hint.classList.add("hide");
+
+  e.preventDefault();
+}
+
+
+function endDrag(){
+
+  if(!dragging) return;
+
+  dragging=false;
+
+  handle.style.cursor="grab";
+
+  if(currentPull >= 170){
+
+    openScroll();
+
+  }else{
+
+    /*
+      gently return
+    */
+
+    scroll.style.height="145px";
+    thread.style.height="70px";
+    currentPull=0;
+
+    setTimeout(()=>{
+      hint.classList.remove("hide");
+    },500);
+
+  }
+
+}
+
+
+handle.addEventListener("touchstart",startDrag,{passive:false});
+document.addEventListener("touchmove",moveDrag,{passive:false});
+document.addEventListener("touchend",endDrag);
+
+handle.addEventListener("mousedown",startDrag);
+document.addEventListener("mousemove",moveDrag);
+document.addEventListener("mouseup",endDrag);
+
+
+/* OPEN */
+
+function openScroll(){
+
+  scroll.classList.add("open");
+
+  hint.classList.add("hide");
+
+  /*
+    Finish opening
+  */
+
+  scroll.style.height="590px";
+  thread.style.height="320px";
+
+  setTimeout(()=>{
+
+    scrollScene.style.display="none";
+
+    letter.style.display="block";
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  },2200);
+
+}
+
+</script>
+
+</body>
+</html>
